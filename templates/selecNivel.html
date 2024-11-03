@@ -1,19 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleccionar Nivel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        select {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Seleccionar Nivel</h1>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('pag5') }}">Principiante</a> (vocales)</li>
-        <!--    <li>Medio (abecedario)</li>         -->
-        <!--    <li>Avanzado (expresiones)</li>    -->
-        </ul>
-    </nav>
-    <p>Nota: solo está activo el nivel Principiante.</p>
+    <div class="container">
+        <h1>Selecciona tu Nivel</h1>
+        <form>
+            <label for="nivel">Elige un nivel:</label>
+            <select id="nivel" name="nivel">
+                <option value="principiante">Principiante</option>
+                <option value="intermedio">Intermedio</option>
+                <option value="avanzado">Avanzado</option>
+            </select>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
 </body>
 </html>
