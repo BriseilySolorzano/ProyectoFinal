@@ -1,12 +1,12 @@
 from flask import Flask, render_template, abort , Response
+app = Flask(__name__)
+app.config['DEBUG'] = True
+"""
 import cv2
 import mediapipe as mp
 mp_mano = mp.solutions.hands
 mano = mp_mano.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.9)
 mp_dibujo = mp.solutions.drawing_utils
-
-app = Flask(__name__)
-app.config['DEBUG'] = True
 
 # Inicializar la cámara
 captura = cv2.VideoCapture(0)
@@ -16,6 +16,7 @@ def generate():
         # Captura el frame
         ret, frame = captura.read()
         if not ret:
+            print("Error al capturar el frame")
             break
         
         frame = cv2.flip(frame, 1)
@@ -64,7 +65,7 @@ def video_feed():
 def cleanup(exception):
     captura.release()
     cv2.destroyAllWindows()
-
+"""
 
 @app.route('/')
 def index():
