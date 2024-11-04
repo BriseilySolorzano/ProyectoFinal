@@ -10,9 +10,6 @@ app.config['DEBUG'] = True
 
 # Inicializar la cámara
 captura = cv2.VideoCapture(0)
-if not captura.isOpened():
-    print("Error: No se pudo abrir la cámara.")
-    exit()
 
 def generate():
     while True:
