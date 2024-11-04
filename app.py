@@ -1,9 +1,36 @@
-from flask import Flask, render_template, abort 
-import logging
+from flask import Flask, render_template, abort , Response
+import cv2
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-logging.basicConfig(level=logging.INFO)
+
+# Inicializar la cámara
+cap = cv2.VideoCapture(0)
+
+def generate():
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("No se pudo capturar el frame")
+            break
+        
+        # Codifica el frame en formato JPEG
+        _, buffer = cv2.imencode('.jpg', frame)
+        yield (b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+
+@app.route('/cam')
+def cam():
+    return render_template('cam.html')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Asegúrate de liberar la cámara al cerrar la aplicación
+@app.teardown_appcontext
+def cleanup(exception):
+    cap.release()
 
 
 @app.route('/')
@@ -29,16 +56,6 @@ def pag4():
 @app.route('/nivelPri')
 def pag5():
     return render_template('nivelPri.html')
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    logging.error(f'Internal server error: {e}')
-    return render_template('500.html'), 500
 
 if __name__ == '__main__':
     app.run()
