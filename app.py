@@ -1,4 +1,4 @@
-from flask import Flask, render_template, abort , Response
+from flask import Flask, render_template, request,  Response, redirect, url_for
 import cv2 
 import mediapipe as mp
 app = Flask(__name__)
@@ -24,6 +24,18 @@ def pag3():
 @app.route('/selcNivel')
 def pag4():
     return render_template('selecNivel.html')
+
+@app.route('/redirect', methods=['POST'])
+def redirect_level():
+    nivel = request.form.get('nivel')
+    if nivel == 'principiante':
+        return redirect(url_for('pag5'))
+    elif nivel == 'intermedio':
+        return redirect(url_for('pag6'))
+    elif nivel == 'avanzado':
+        return redirect(url_for('pag7'))
+    else:
+        return redirect(url_for('index'))
 
 @app.route('/nivelPri')
 def pag5():
