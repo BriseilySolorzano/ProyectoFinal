@@ -1,5 +1,5 @@
 const alphabet = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
-alphabet.splice(alphabet.indexOf('C') + 1, 0, 'CH');
+alphabet.splice(alphabet.indexOf('H') + 1, 0, 'CH');
 let currentIndex = 0;
 
 const letterDisplay = document.getElementById('letterDisplay');
