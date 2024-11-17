@@ -21,16 +21,16 @@ h1 {
     flex-direction: column;
     align-items: center;
     background-color: #fff;
-    padding: 50px; /* Aumenta el padding para agrandar la tarjeta */
+    padding: 5px; /* Aumenta el padding para agrandar la tarjeta */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 350px; /* Aumenta el ancho máximo para hacer la tarjeta más grande */
+    max-width: 320px; /* Aumenta el ancho máximo para hacer la tarjeta más grande */
     margin: 0 auto;
 }
 
 .letter-display {
-    font-size: 10em; /* Ajusta el tamaño de la letra principal */
+    font-size: 4em; /* Ajusta el tamaño de la letra principal */
     font-weight: bold;
     color: #333;
     text-align: center;
@@ -38,8 +38,8 @@ h1 {
 }
 
 .sign-display {
-    width: 185px; /* Ajusta el ancho de la sección de la imagen */
-    height: 250px; /* Ajusta la altura de la sección de la imagen */
+    width: 240px; /* Ajusta el ancho de la sección de la imagen */
+    height: 390px; /* Ajusta la altura de la sección de la imagen */
     background-color: #f0f0f0;
     display: flex;
     align-items: center;
@@ -48,8 +48,8 @@ h1 {
 }
 
 .sign-display img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 125%;
+    max-height: 125%;
     object-fit: contain;
 }
 
@@ -91,8 +91,8 @@ h1 {
 .letter-button {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
-    padding: 30px; /* Aumenta el padding para hacer los botones de letras más grandes */
-    font-size: 3em; /* Aumenta el tamaño de la letra en los botones */
+    padding: 5px; /* Aumenta el padding para hacer los botones de letras más grandes */
+    font-size: 2em; /* Aumenta el tamaño de la letra en los botones */
     cursor: pointer;
     text-align: center;
     border-radius: 5px;
@@ -114,3 +114,4 @@ h1 {
         margin-top: 10px;
     }
 }
+
