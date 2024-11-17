@@ -29,8 +29,16 @@ def pag4():
 def pag5():
     return render_template('nivelPri.html')
 
-@app.route('/simular')
+@app.route('/nivelMed')
 def pag6():
+    return render_template('nivelMed.html')
+
+@app.route('/nivelAvan')
+def pag7():
+    return render_template('nivelAvan.html')
+
+@app.route('/simular')
+def pag8():
     return render_template('simular.html')
 
 class OpenCV:
