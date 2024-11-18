@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    {% include 'header.html' %}
     <div style="text-align: center;">
         <span style="font-size: 1.5em; color: #333;">Abecedario LESSA</span>
     </div>
@@ -23,7 +24,7 @@
         </div>
         <div class="alphabet-grid" id="alphabetGrid"></div>
     </div>
-
+    {% include 'footer.html' %}
     <script>
         const basePath = "{{ url_for('static', filename='img/') }}";
     </script>

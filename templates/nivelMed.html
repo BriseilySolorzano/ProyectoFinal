@@ -6,14 +6,16 @@
     <title>Nivel Medio</title>
 </head>
 <body>
+    {% include 'header.html' %}
     <center>
         <h1>¡Abecedario!</h1>
         <p>Toca la tecla Space para que la cámara lea tu seña.</p>
         <p>Propuesta de implementación. Para aplicarla se requieren muchas mejoras sobre la red neuronal que hemos entrenado.</p>
         
         <div> 
-            <img src="{{url_for('video')}}" width="50%"/> 
+            <img src="/video" style="border: 1px solid black;" alt="Cámara no disponible">
         </div>
     </center>
+    {% include 'footer.html' %}
 </body>
 </html>
