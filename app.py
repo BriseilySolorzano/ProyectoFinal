@@ -1,6 +1,7 @@
 from flask import Flask, render_template, abort , Response, request, url_for, redirect
 import cv2 
 from lectorMano import *
+
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
