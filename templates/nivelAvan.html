@@ -16,21 +16,19 @@
             <span style="font-size: 2.5em; color: #1c2385;">¡Gestos!</span>
             <hr>
             <div class="alert alert-primary" role="alert">
-                Toca la tecla Space para que la cámara lea tu seña.
+                Haz click en el botón Leer/Finalizar para que la cámara lea tu seña.
             </div>
             <p>Propuesta de implementación. Para aplicarla se requieren muchas mejoras sobre la red neuronal que hemos
                 entrenado.</p>
 
             <div>
-                <img src="{{url_for('video')}}" width="50%" alt="Cámara no disponible"/>
+                <img src="/video" style="border: 1px solid black;" alt="Cámara no disponible"/>
             </div>
 
              <!-- Un solo botón que alterna entre encender y apagar la cámara -->
             <form method="POST" action="{{ url_for('toggle_camera', page=request.endpoint) }}">
-                <button type="submit" class="btn {{ 'btn-danger' if camera_active else 'btn-success' }} w-100">
-               
-                 iniciar - enviar 
-                
+                <button type="submit" class="btn {{ 'btn-danger' if camera_active else 'btn-success' }}">
+                    Leer/Finalizar
                 </button>
             </form>
         </center>
