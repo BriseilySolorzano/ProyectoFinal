@@ -1,9 +1,54 @@
-from flask import Flask, render_template, abort , Response, request, url_for, redirect
-import cv2 
+from flask import Flask, render_template, Response, request, redirect, url_for
 from lectorMano import *
+import mediapipe as mp
+import cv2
+import time
+from threading import Lock
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
+
+# Variables globales
+camara = None
+camera_active = False
+
+# Clase de cámara
+class Camara:
+    def __init__(self, cam_id=0):
+        self.captura = cv2.VideoCapture(cam_id, cv2.CAP_DSHOW)  # Usamos CAP_DSHOW en lugar de MSMF
+        if not self.captura.isOpened():
+            raise ValueError("No se pudo acceder a la cámara")
+
+    def procesar_frame(self, frame):
+        # Aquí puedes agregar procesamiento adicional al frame si es necesario
+        return frame
+
+    def finalizar_captura(self):
+        if self.captura.isOpened():
+            self.captura.release()
+
+
+
+# Crear un Lock global
+camara_lock = Lock()
+
+def gen_frame():
+    global camara
+    while True:
+        with camara_lock:  # Asegura que solo un hilo acceda a la cámara a la vez
+            if camara and camera_active:
+                ret, frame = camara.captura.read()
+                if not ret:
+                    break
+                frame = cv2.flip(frame, 1)  # Modo espejo
+                frame = camara.procesar_frame(frame)
+                ret, jpeg = cv2.imencode('.jpg', frame)
+                if ret:
+                    frame_bytes = jpeg.tobytes()
+                    yield (b'--frame\r\n'
+                           b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        time.sleep(0.1)
+ 
 
 @app.route('/')
 def index():
@@ -49,42 +94,30 @@ def pag6():
 def pag7():
     return render_template('nivelAvan.html')
 
-@app.route('/simular')
-def pag8():
-    return render_template('simular.html')
-
-# Instancia de la clase Camara
-camara = Camara()
-
-# Generador de fotogramas para transmisión
-def GenFrame():
-    while True:
-        # Captura el fotograma
-        ret, frame = camara.captura.read()
-        if not ret:
-            break
-        
-        # Modo espejo
-        frame = cv2.flip(frame, 1)
-
-        # Procesar el frame con la clase Camara
-        frame = camara.ProcesarFrame(frame)
-
-        # Codificar el frame en formato JPEG
-        suc, encode = cv2.imencode('.jpg', frame)
-        frame = encode.tobytes()
-        
-        # Enviar el frame
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
 @app.route('/video')
 def video():
-    return Response(GenFrame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Ruta para alternar la cámara
+@app.route('/toggle_camera/<page>', methods=['POST'])
+def toggle_camera(page):
+    global camera_active, camara
+    if camera_active:
+        # Desactivar cámara
+        camera_active = False
+        if camara:
+            camara.finalizar_captura()
+            camara = None
+        print("Cámara desactivada")
+    else:
+        # Activar cámara
+        camera_active = True
+        camara = Camara()  # Iniciar la cámara
+        print("Cámara activada")
+    
+    # Redirigir a la misma página en la que estaba
+    return redirect(url_for(page))  # Redirige a la página actual
 
 if __name__ == '__main__':
-    try:
-        app.run(debug=False)
-    finally:
-        camara.FinalizarCaptura()
-        cv2.destroyAllWindows()
+    
+    app.run(debug=False)
