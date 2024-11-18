@@ -1,7 +1,6 @@
 from flask import Flask, render_template, Response, request, redirect, url_for
-from lectorMano import *
-import mediapipe as mp
 import cv2
+from lectorMano import *
 import time
 from threading import Lock
 
@@ -11,23 +10,6 @@ app.config['DEBUG'] = True
 # Variables globales
 camara = None
 camera_active = False
-
-# Clase de cámara
-class Camara:
-    def __init__(self, cam_id=0):
-        self.captura = cv2.VideoCapture(cam_id, cv2.CAP_DSHOW)  # Usamos CAP_DSHOW en lugar de MSMF
-        if not self.captura.isOpened():
-            raise ValueError("No se pudo acceder a la cámara")
-
-    def procesar_frame(self, frame):
-        # Aquí puedes agregar procesamiento adicional al frame si es necesario
-        return frame
-
-    def finalizar_captura(self):
-        if self.captura.isOpened():
-            self.captura.release()
-
-
 
 # Crear un Lock global
 camara_lock = Lock()
@@ -48,7 +30,6 @@ def gen_frame():
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
         time.sleep(0.1)
- 
 
 @app.route('/')
 def index():
@@ -106,7 +87,6 @@ def toggle_camera(page):
         # Desactivar cámara
         camera_active = False
         if camara:
-            camara.finalizar_captura()
             camara = None
         print("Cámara desactivada")
     else:
@@ -119,5 +99,4 @@ def toggle_camera(page):
     return redirect(url_for(page))  # Redirige a la página actual
 
 if __name__ == '__main__':
-    
     app.run(debug=False)
