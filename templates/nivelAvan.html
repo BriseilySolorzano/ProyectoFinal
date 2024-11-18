@@ -13,7 +13,8 @@
     {% include 'header.html' %}
     <div class="container px-5 mt-4">
         <center>
-            <h1>¡Gestos!</h1>
+            <span style="font-size: 2.5em; color: #1c2385;">¡Gestos!</span>
+            <hr>
             <div class="alert alert-primary" role="alert">
                 Toca la tecla Space para que la cámara lea tu seña.
             </div>
@@ -21,7 +22,7 @@
                 entrenado.</p>
 
             <div>
-                <img src="{{url_for('video')}}" class="border border-danger border-3" width="50%" />
+                <img src="{{url_for('video')}}" width="50%" alt="Cámara no disponible"/>
             </div>
 
              <!-- Un solo botón que alterna entre encender y apagar la cámara -->
