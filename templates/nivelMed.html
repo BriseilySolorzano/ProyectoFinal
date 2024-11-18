@@ -19,6 +19,15 @@
         <div> 
             <img src="/video" style="border: 1px solid black;" alt="Cámara no disponible">
         </div>
+
+         <!-- Un solo botón que alterna entre encender y apagar la cámara -->
+            <form method="POST" action="{{ url_for('toggle_camera', page=request.endpoint) }}">
+                <button type="submit" class="btn {{ 'btn-danger' if camera_active else 'btn-success' }} w-100">
+               
+                 iniciar - enviar 
+                
+                </button>
+            </form>
     </center>
     {% include 'footer.html' %}
 </body>
