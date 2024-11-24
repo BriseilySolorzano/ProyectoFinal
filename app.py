@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response, request, redirect, url_for
 import cv2
-from lectorMano import *
+from detectorVocal import *
 import time
 from threading import Lock
 
