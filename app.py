@@ -14,7 +14,7 @@ camera_active = False
 # Crear un Lock global
 camara_lock = Lock()
 
-def gen_frame():
+def GenerarFrame():
     global camara
     while True:
         with camara_lock:  # Asegura que solo un hilo acceda a la cámara a la vez
@@ -77,7 +77,7 @@ def pag7():
 
 @app.route('/video')
 def video():
-    return Response(gen_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(GenerarFrame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # Ruta para alternar la cámara
 @app.route('/toggle_camera/<page>', methods=['POST'])
