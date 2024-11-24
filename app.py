@@ -23,7 +23,7 @@ def GenerarFrame():
                 if not ret:
                     break
                 frame = cv2.flip(frame, 1)  # Modo espejo
-                frame = camara.procesar_frame(frame)
+                frame = camara.ProcesarFrame(frame)
                 ret, jpeg = cv2.imencode('.jpg', frame)
                 if ret:
                     frame_bytes = jpeg.tobytes()

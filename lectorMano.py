@@ -18,7 +18,7 @@ class Camara:
         )
         self.mp_dibujo = mp.solutions.drawing_utils
 
-    def procesar_frame(self, frame):
+    def ProcesarFrame(self, frame):
         # Dimensiones del frame
         alto, ancho, _ = frame.shape
 
@@ -60,6 +60,6 @@ class Camara:
                         cv2.circle(frame, (px, py), 3, (255, 0, 0), -1)
         return frame
 
-    def finalizar_captura(self):
+    def FinalizarCaptura(self):
         if self.captura.isOpened():
             self.captura.release()
