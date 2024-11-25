@@ -21,6 +21,7 @@ class Camara:
     def DetectarDedos(self, mano_landmarks, alto, ancho):
         # Obtener la posición de los landmarks necesarios
         nudo_pulgar = mano_landmarks.landmark[2]     # Nudillo del pulgar
+        mitad_pulgar = mano_landmarks.landmark[3]    # Mitad del pulgar
         punta_pulgar = mano_landmarks.landmark[4]    # Punta del pulgar
         nudo_indice = mano_landmarks.landmark[6]     # Nudillo del índice
         punta_indice = mano_landmarks.landmark[8]    # Punta del índice
@@ -39,7 +40,7 @@ class Camara:
         dedo_anular = punta_anular.y < nudo_anular.y
 
         # Verificar que el pulgar esté hacia la izquierda
-        pulgar = punta_pulgar.x > nudo_pulgar.x
+        pulgar = punta_pulgar.x < nudo_pulgar.x
         # Verificar que está haciendo puño
         a_d_indice = punta_indice.y > profun_indice.y
         a_d_mayor = punta_mayor.y > profun_mayor.y
@@ -47,6 +48,7 @@ class Camara:
         a_d_meñique = punta_meñique.y > profun_meñique.y
         
         # Verificar que los dedos estén medio abiertos
+        e_d_pulgar = punta_pulgar.x > mitad_pulgar.x
         e_d_indice = punta_indice.y > nudo_indice.y and punta_indice.y < profun_indice.y
         e_d_mayor = punta_mayor.y > nudo_mayor.y and punta_mayor.y < profun_mayor.y
         e_d_anular = punta_anular.y > nudo_anular.y and punta_anular.y < profun_anular.y
@@ -71,13 +73,14 @@ class Camara:
                 pulgar and o and not u and not dedo_anular and not i
             ),
             'E': lambda: (
-                not pulgar and e_d_indice and e_d_mayor and e_d_anular and e_d_meñique
+                e_d_pulgar and not pulgar and e_d_indice and e_d_mayor and e_d_anular and e_d_meñique
             ),
             'I': lambda: (
-                not pulgar and not u and not dedo_anular and i
+                i and not pulgar and not u and not dedo_anular and not e_d_indice and not e_d_mayor
+                and not e_d_anular and not e_d_meñique
             ),
             'U': lambda: (
-                not pulgar and u and not dedo_anular and not i
+                 u and not pulgar and not dedo_anular and not i
             )
         }
 
@@ -86,8 +89,8 @@ class Camara:
             if condicion():
                 return letra
         return 'no reconocida'
-
-    def ProcesarFrame(self, frame):
+    
+    def ProcesarFrame(self, frame, evaluar_dedos=False):
         # Dimensiones del frame
         alto, ancho, _ = frame.shape
 
@@ -95,25 +98,21 @@ class Camara:
         color = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         resultado = self.mano.process(color)
 
-        vocal = "no reconocida"  # Valor por defecto si no hay gestos detectados
-
+        letra_detectada = None
         if resultado.multi_hand_landmarks:
             for mano_landmarks in resultado.multi_hand_landmarks:
-                # Obtener la posición de los dedos
-                vocal = self.DetectarDedos(mano_landmarks, alto, ancho)
+                # Obtener el punto central (landmark 9) para definir el rectángulo
+                pto_central = mano_landmarks.landmark[9]
+                cx, cy = int(pto_central.x * ancho), int(pto_central.y * alto)
 
-                # Obtener la coordenada central de la mano (punto 9)
-                pto_i5 = mano_landmarks.landmark[9]
-                cx, cy = int(pto_i5.x * ancho), int(pto_i5.y * alto)
-
-                # Definir el área del rectángulo
+                # Definir el área del rectángulo alrededor de la mano
                 x1, y1 = max(0, cx - 100), max(0, cy - 100)
-                x2, y2 = min(ancho, x1 + 200), min(alto, y1 + 200)
-                
-                # Dibujar el área de seguimiento
+                x2, y2 = min(ancho, cx + 100), min(alto, cy + 100)
+
+                # Dibujar el rectángulo de seguimiento
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
-                # Dibujar conexiones dentro del rectángulo
+                # Dibujar puntos y conexiones dentro del rectángulo
                 for conexion in self.mp_mano.HAND_CONNECTIONS:
                     p1, p2 = conexion
                     punto1 = mano_landmarks.landmark[p1]
@@ -122,45 +121,57 @@ class Camara:
                     # Convertir coordenadas normalizadas a píxeles
                     px1, py1 = int(punto1.x * ancho), int(punto1.y * alto)
                     px2, py2 = int(punto2.x * ancho), int(punto2.y * alto)
-                    
+
                     if (x1 <= px1 <= x2 and y1 <= py1 <= y2) and (x1 <= px2 <= x2 and y1 <= py2 <= y2):
-                        # Dibujar la conexión entre los puntos
                         cv2.line(frame, (px1, py1), (px2, py2), (255, 255, 255), 2)
 
-                # Dibujar puntos individuales dentro del rectángulo
                 for punto in mano_landmarks.landmark:
                     px, py = int(punto.x * ancho), int(punto.y * alto)
                     if x1 <= px <= x2 and y1 <= py <= y2:
                         cv2.circle(frame, (px, py), 3, (255, 0, 0), -1)
-        return frame, vocal
 
+                # Si está habilitada la evaluación de dedos, detectar la letra
+                if evaluar_dedos:
+                    letra_detectada = self.DetectarDedos(mano_landmarks, alto, ancho)
+        return frame, letra_detectada
+    
     def FinalizarCaptura(self):
         if self.captura.isOpened():
             self.captura.release()
 
-
-# Ejecución
+# Ejecución principal
 if __name__ == "__main__":
     camara = Camara()
+    lectura_habilitada = False  # Flag para habilitar la lectura de la mano
+
     while True:
         ret, frame = camara.captura.read()
         if not ret:
             break
 
-        # Procesar frame
-        frame, vocal = camara.ProcesarFrame(frame)
-
         # Modo espejo
         frame = cv2.flip(frame, 1)
 
-        # Agregar el texto al frame
-        cv2.putText(frame, f"Vocal: {vocal}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        letra_detectada = None
+        if not lectura_habilitada:
+            # Mostrar frame inicial con mensaje
+            cv2.putText(frame, "Presiona Enter para iniciar lectura", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        else:
+            # Procesar frame para detección de la mano y evaluar dedos
+            frame, letra_detectada = camara.ProcesarFrame(frame, evaluar_dedos=True)
+
+        # Mostrar la letra detectada, si existe
+        if letra_detectada:
+            cv2.putText(frame, f"Letra detectada: {letra_detectada}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
         # Mostrar el frame
-        cv2.imshow("Detector de vocal", frame)
+        cv2.imshow("Detector de Mano", frame)
 
-        # Salir al presionar la tecla 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        # Controlar las teclas
+        key = cv2.waitKey(1) & 0xFF
+        if key == 13:  # Tecla Enter
+            lectura_habilitada = True
+        elif key == ord('q'):  # Salir al presionar 'q'
             break
 
     camara.FinalizarCaptura()

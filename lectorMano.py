@@ -37,7 +37,7 @@ class Camara:
                 x2, y2 = min(ancho, x1 + 200), min(alto, y1 + 200)
 
                 # Dibujar el área de seguimiento
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
                 # Dibujar solo los puntos y líneas dentro del rectángulo
                 for conexion in self.mp_mano.HAND_CONNECTIONS:
@@ -51,7 +51,7 @@ class Camara:
 
                     if (x1 <= px1 <= x2 and y1 <= py1 <= y2) and (x1 <= px2 <= x2 and y1 <= py2 <= y2):
                         # Dibujar la conexión
-                        cv2.line(frame, (px1, py1), (px2, py2), (0, 255, 255), 2)
+                        cv2.line(frame, (px1, py1), (px2, py2), (255, 255, 255), 2)
 
                 # Dibujar puntos individuales dentro del rectángulo
                 for punto in mano_landmarks.landmark:

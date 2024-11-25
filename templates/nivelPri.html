@@ -21,21 +21,7 @@
             <p>¡Haz la seña correcta para ganar!</p>
 
             <div>
-                <video id="video" autoplay alt="Cámara no disponible"/>
-                <script>
-                    async function startCamera() {
-                        try {
-                            const videoElement = document.getElementById('video');
-                            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                            videoElement.srcObject = stream;
-                        } catch (error) {
-                            console.error('Error al acceder a la cámara:', error);
-                            alert('No se pudo acceder a la cámara. Verifica los permisos.');
-                        }
-                    }
-                
-                    window.onload = startCamera;
-                </script>
+                <img src="/video" style="border: 1px solid black;" alt="Cámara no disponible"/>
             </div>
 
              <!-- Un solo botón que alterna entre encender y apagar la cámara -->
