@@ -170,9 +170,13 @@ while True:
     # Procesar el frame
     frame, letra_detectada = camara.ProcesarFrame(frame, evaluar_dedos=True)
 
-    # Mostrar el resultado
+    # Mostrar el resultado (solo para las pruebas).
+    # ¡¡¡El proyecto no mostrará esta información!!!
     cv2.putText(frame, f"Letra detectada: {letra_detectada}", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
+    # Indicar que presione Enter para enviar la seña
+    cv2.putText(frame, "Presiona Enter para enviar tu respuesta", (50, 250), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
+    
     # Mostrar la imagen
     cv2.imshow('Detección de signos', frame)
 
