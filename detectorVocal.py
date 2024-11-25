@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import random
 
 # Clase de la cámara
 class Camara:
@@ -17,6 +18,20 @@ class Camara:
             min_detection_confidence=min_detection_confidence
         )
         self.mp_dibujo = mp.solutions.drawing_utils
+        self.vocal_propuesta = None
+        self.respuesta_vocal = None
+
+    def ElegirVocal(self):
+        vocales = ['A', 'E', 'I', 'O', 'U']
+        self.vocal_propuesta = random.choice(vocales)
+        return self.vocal_propuesta
+    
+    def CompararVocal(self, letra_detectada):
+        # Comparar la letra detectada con la vocal propuesta
+        if letra_detectada == self.vocal_propuesta:
+            self.respuesta_vocal = "¡correcta!"
+        else:
+            self.respuesta_vocal = "incorrecta :("
 
     def DetectarDedos(self, mano_landmarks, alto, ancho):
         # Obtener la posición de los landmarks necesarios
@@ -98,6 +113,10 @@ class Camara:
         color = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         resultado = self.mano.process(color)
 
+        if self.vocal_propuesta is None:
+            self.vocal_propuesta = self.ElegirVocal()
+        cv2.putText(frame, f"Vocal propuesta: {self.vocal_propuesta}", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
         letra_detectada = None
         if resultado.multi_hand_landmarks:
             for mano_landmarks in resultado.multi_hand_landmarks:
@@ -134,47 +153,39 @@ class Camara:
                 if evaluar_dedos:
                     letra_detectada = self.DetectarDedos(mano_landmarks, alto, ancho)
         return frame, letra_detectada
+
+# Ejecutar el programa
+camara = Camara()
+
+# Establecer la ventana de captura de video
+while True:
+    ret, frame = camara.captura.read()
+
+    if not ret:
+        break
     
-    def FinalizarCaptura(self):
-        if self.captura.isOpened():
-            self.captura.release()
+    # Modo espejo
+    frame = cv2.flip(frame, 1)
 
-# Ejecución principal
-if __name__ == "__main__":
-    camara = Camara()
-    lectura_habilitada = False  # Flag para habilitar la lectura de la mano
+    # Procesar el frame
+    frame, letra_detectada = camara.ProcesarFrame(frame, evaluar_dedos=True)
 
-    while True:
-        ret, frame = camara.captura.read()
-        if not ret:
-            break
+    # Mostrar el resultado
+    cv2.putText(frame, f"Letra detectada: {letra_detectada}", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
-        # Modo espejo
-        frame = cv2.flip(frame, 1)
+    # Mostrar la imagen
+    cv2.imshow('Detección de signos', frame)
 
-        letra_detectada = None
-        if not lectura_habilitada:
-            # Mostrar frame inicial con mensaje
-            cv2.putText(frame, "Enter para iniciar lectura. Scape para finalizar", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
+    # Evaluar respuesta cuando se presiona Enter
+    if cv2.waitKey(1) == 13:  # Tecla Enter
+        if letra_detectada is not None:
+            camara.CompararVocal(letra_detectada)
+            print(f"Tu respuesta fue: {letra_detectada}. Respuesta: {camara.respuesta_vocal}")
         else:
-            # Procesar frame para detección de la mano y evaluar dedos
-            frame, letra_detectada = camara.ProcesarFrame(frame, evaluar_dedos=True)
-            if (cv2.waitKey(1) & 0xFF == 27):
-                break
+            print("No se detectó ninguna letra.")
 
-        # Mostrar la letra detectada, si existe
-        if letra_detectada:
-            cv2.putText(frame, f"Letra detectada: {letra_detectada}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        break
 
-        # Mostrar el frame
-        cv2.imshow("Detector de Mano", frame)
-
-        # Controlar las teclas
-        key = cv2.waitKey(1) & 0xFF
-        if key == 13:  # Tecla Enter
-            lectura_habilitada = True
-        elif key == 27:  # Salir al presionar 'q'
-            break
-
-    camara.FinalizarCaptura()
-    cv2.destroyAllWindows()
+# Liberar recursos
+camara.captura.release()
+cv2.destroyAllWindows()
