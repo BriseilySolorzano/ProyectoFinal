@@ -155,10 +155,12 @@ if __name__ == "__main__":
         letra_detectada = None
         if not lectura_habilitada:
             # Mostrar frame inicial con mensaje
-            cv2.putText(frame, "Presiona Enter para iniciar lectura", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, "Enter para iniciar lectura. Scape para finalizar", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
         else:
             # Procesar frame para detección de la mano y evaluar dedos
             frame, letra_detectada = camara.ProcesarFrame(frame, evaluar_dedos=True)
+            if (cv2.waitKey(1) & 0xFF == 27):
+                break
 
         # Mostrar la letra detectada, si existe
         if letra_detectada:
