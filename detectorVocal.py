@@ -155,7 +155,7 @@ if __name__ == "__main__":
         letra_detectada = None
         if not lectura_habilitada:
             # Mostrar frame inicial con mensaje
-            cv2.putText(frame, "Enter para iniciar lectura. Scape para finalizar", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+            cv2.putText(frame, "Enter para iniciar lectura. Scape para finalizar", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
         else:
             # Procesar frame para detección de la mano y evaluar dedos
             frame, letra_detectada = camara.ProcesarFrame(frame, evaluar_dedos=True)
@@ -173,7 +173,7 @@ if __name__ == "__main__":
         key = cv2.waitKey(1) & 0xFF
         if key == 13:  # Tecla Enter
             lectura_habilitada = True
-        elif key == ord('q'):  # Salir al presionar 'q'
+        elif key == 27:  # Salir al presionar 'q'
             break
 
     camara.FinalizarCaptura()
