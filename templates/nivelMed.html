@@ -16,27 +16,90 @@
             <span style="font-size: 2.5em; color: #1c2385;">¡Abecedario!</span>
             <hr>
             <div class="alert alert-primary" role="alert">
-                Haz click en el botón Leer/Finalizar para que la cámara lea tu seña.
+                Haz click en el botón Iniciar para que la cámara lea tu seña.
             </div>
-            <p>Propuesta de implementación. Para aplicarla se requieren muchas mejoras sobre la red neuronal que hemos
-                entrenado.</p>
-
-            <div>
-                <img src="/video" style="border: 1px solid black;" alt="Cámara no disponible"/>
+            <p>Propuesta de implementación.</p>
+            
+            <div id="video-container" style="display: none;">
+                <img id="camera-feed" src="" style="border: 1px solid black;" alt="Cámara no disponible"/>
             </div>
-
-             <!-- Un solo botón que alterna entre encender y apagar la cámara -->
-            <form method="POST" action="{{ url_for('toggle_camera', page=request.endpoint) }}">
-                <button type="submit" class="btn {{ 'btn-danger' if camera_active else 'btn-success' }}">
-                    Leer/Finalizar
-                </button>
-            </form>
+    
+            <!-- Botón de alternar cámara -->
+            <button id="camera-toggle" class="btn btn-success" onclick="toggleCamera()">Iniciar</button>
         </center>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
     </div>
+
     {% include 'footer.html' %}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const videoContainer = document.getElementById('video-container');
+            const loading = document.getElementById('loading');
+            const cameraFeed = document.getElementById('camera-feed');
+            const button = document.getElementById('camera-toggle');
+
+            // Verifica si la cámara está activa
+            try {
+                const response = await fetch('/camera_status');
+                const data = await response.json();
+
+                if (data.camera_ready) {
+                    // Si la cámara está activa, muestra el video
+                    cameraFeed.src = '/video';
+                    button.className = 'btn btn-danger';
+                    button.innerText = 'Cerrar';
+                    videoContainer.style.display = 'block'; // Muestra el contenedor de video
+                } else {
+                    cameraFeed.src = ''; // No muestra la imagen si la cámara no está activa
+                }
+            } catch (error) {
+                console.error("Error al verificar el estado de la cámara:", error);
+            } finally {
+                // Elimina el indicador de carga
+                loading.style.display = 'none';
+            }
+        });
+
+        async function toggleCamera() {
+            const button = document.getElementById('camera-toggle');
+            const cameraFeed = document.getElementById('camera-feed');
+            const videoContainer = document.getElementById('video-container');
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/toggle_camera', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.camera_active) {
+                    cameraFeed.src = '/video'; // Establece la fuente del video
+                    button.className = 'btn btn-danger';
+                    button.innerText = 'Cerrar';
+                    videoContainer.style.display = 'block'; // Muestra el contenedor de video
+                } else {
+                    cameraFeed.src = ''; // No muestra la imagen
+                    button.className = 'btn btn-success';
+                    button.innerText = 'Iniciar';
+                    videoContainer.style.display = 'none'; // Oculta el contenedor de video
+                }
+            } catch (error) {
+                console.error("Error al alternar la cámara:", error);
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Evento para apagar la cámara al salir de la página
+        window.addEventListener('beforeunload', async () => {
+            try {
+                await fetch('/toggle_camera_off', { method: 'POST' });
+            } catch (error) {
+                console.error("Error al apagar la cámara automáticamente:", error);
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>

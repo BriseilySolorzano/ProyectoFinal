@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, redirect, url_for
+from flask import Flask, render_template, Response, request, redirect, url_for, jsonify
 import cv2
 from lectorMano import *
 import time
@@ -17,7 +17,7 @@ camara_lock = Lock()
 def GenerarFrame():
     global camara
     while True:
-        with camara_lock:  # Asegura que solo un hilo acceda a la cámara a la vez
+        with camara_lock:
             if camara and camera_active:
                 ret, frame = camara.captura.read()
                 if not ret:
@@ -30,6 +30,32 @@ def GenerarFrame():
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
         time.sleep(0.1)
+
+# Ruta para alternar la cámara
+@app.route('/toggle_camera', methods=['POST'])
+def toggle_camera():
+    global camera_active, camara
+    if camera_active:
+        camera_active = False
+        if camara:
+            camara = None
+        print("Cámara desactivada")
+    else:
+        camera_active = True
+        camara = Camara()
+        print("Cámara activada")
+    return jsonify({"camera_active": camera_active})
+
+# Ruta para apagar la cámara automáticamente al salir de la página
+@app.route('/toggle_camera_off', methods=['POST'])
+def toggle_camera_off():
+    global camera_active, camara
+    if camera_active:
+        camera_active = False
+        if camara:
+            camara = None
+        print("Cámara apagada automáticamente al salir de la página")
+    return jsonify({"camera_active": camera_active})
 
 @app.route('/')
 def index():
@@ -77,26 +103,14 @@ def pag7():
 
 @app.route('/video')
 def video():
+    global camera_active
+    if not camera_active:
+        return jsonify({"error": "La cámara no está activa"}), 503
     return Response(GenerarFrame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# Ruta para alternar la cámara
-@app.route('/toggle_camera/<page>', methods=['POST'])
-def toggle_camera(page):
-    global camera_active, camara
-    if camera_active:
-        # Desactivar cámara
-        camera_active = False
-        if camara:
-            camara = None
-        print("Cámara desactivada")
-    else:
-        # Activar cámara
-        camera_active = True
-        camara = Camara()  # Iniciar la cámara
-        print("Cámara activada")
-    
-    # Redirigir a la misma página en la que estaba
-    return redirect(url_for(page))  # Redirige a la página actual
+@app.route('/camera_status')
+def camera_status():
+    return jsonify({"camera_ready": camera_active})
 
 if __name__ == '__main__':
     app.run(debug=False)
