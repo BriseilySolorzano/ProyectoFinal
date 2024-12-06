@@ -35,7 +35,7 @@
             <div class="alert alert-primary" role="alert">
                 Haz click en el botón Iniciar para que la cámara lea tu seña.
             </div>
-            <p id="instruccion" style="font-size: 1.3em;">¡Haz la seña correcta para ganar!</p>
+            <p id="instruccion" style="font-size: 1.1em;">¡Haz la seña correcta para ganar!</p>
         </center>
 
         <div class="row">
@@ -47,7 +47,7 @@
                 <div class="mt-3">
                     <button id="nueva-letra" class="btn btn-secondary" style="display: none;">Nueva Letra</button>
                 </div>
-                <button id="camera-toggle" class="btn btn-success" onclick="toggleCamera()">Leer</button>
+                <button id="camera-toggle" class="btn btn-success" onclick="toggleCamera()">Iniciar</button>
             </div>
             <div class="col-md-6 column">
                 <div id="video-container" style="display: none;" >
@@ -149,7 +149,7 @@
                     // Cámara desactivada
                     cameraFeed.src = ''; // No muestra la imagen
                     button.className = 'btn btn-success';
-                    button.innerText = 'Leer';
+                    button.innerText = 'Iniciar';
                     videoContainer.style.display = 'none'; // Oculta el contenedor de video
                     sessionStorage.removeItem('cameraState'); // Elimina el estado de la cámara
                 }
