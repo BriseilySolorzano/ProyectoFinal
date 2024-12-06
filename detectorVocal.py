@@ -48,14 +48,18 @@ class Camara:
         # Obtener la posición de los landmarks necesarios
         nudo_pulgar = mano_landmarks.landmark[2]     # Nudillo del pulgar
         mitad_pulgar = mano_landmarks.landmark[3]    # Mitad del pulgar
-        punta_pulgar = mano_landmarks.landmark[4]    # Punta del pulgar
-        nudo_indice = mano_landmarks.landmark[6]     # Nudillo del índice
+        punta_pulgar = mano_landmarks.landmark[4]
+        nudo2_indice = mano_landmarks.landmark[6]    # Punta del pulgar
+        nudo_indice = mano_landmarks.landmark[7]     # Nudillo del índice
         punta_indice = mano_landmarks.landmark[8]    # Punta del índice
-        nudo_mayor = mano_landmarks.landmark[10]     # Nudillo del mayor
+        nudo2_mayor = mano_landmarks.landmark[10]
+        nudo_mayor = mano_landmarks.landmark[11]     # Nudillo del mayor
         punta_mayor = mano_landmarks.landmark[12]    # Punta del mayor
-        nudo_anular = mano_landmarks.landmark[14]    # Nudillo del anular
+        nudo2_anular = mano_landmarks.landmark[14]
+        nudo_anular = mano_landmarks.landmark[15]    # Nudillo del anular
         punta_anular = mano_landmarks.landmark[16]   # Punta del anular
-        nudo_meñique = mano_landmarks.landmark[18]   # Nudillo del meñique
+        nudo2_meñique = mano_landmarks.landmark[18]
+        nudo_meñique = mano_landmarks.landmark[19]   # Nudillo del meñique
         punta_meñique = mano_landmarks.landmark[20]  # Punta del meñique
         profun_indice = mano_landmarks.landmark[5]   # Base del índice
         profun_mayor = mano_landmarks.landmark[9]    # Base del mayor
@@ -75,10 +79,10 @@ class Camara:
         
         # Verificar que los dedos estén medio abiertos
         e_d_pulgar = punta_pulgar.x > mitad_pulgar.x
-        e_d_indice = punta_indice.y > nudo_indice.y and punta_indice.y < profun_indice.y
-        e_d_mayor = punta_mayor.y > nudo_mayor.y and punta_mayor.y < profun_mayor.y
-        e_d_anular = punta_anular.y > nudo_anular.y and punta_anular.y < profun_anular.y
-        e_d_meñique = punta_meñique.y > nudo_meñique.y and punta_meñique.y < profun_meñique.y
+        e_d_indice = punta_indice.y > nudo2_indice.y
+        e_d_mayor = punta_mayor.y > nudo2_mayor.y
+        e_d_anular = punta_anular.y > nudo2_anular.y
+        e_d_meñique = punta_meñique.y > nudo2_meñique.y
 
         # Verificar meñique levantado
         i = punta_meñique.y < nudo_meñique.y
