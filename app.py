@@ -41,6 +41,33 @@ def GenerarFrame():
                            b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
         time.sleep(0.1)
 
+# Ruta para alternar la cámara
+@app.route('/toggle_camera', methods=['POST'])
+def toggle_camera():
+    global camera_active, camara
+    if camera_active:
+        camera_active = False
+        if camara:
+            camara = None
+        print("Cámara desactivada")
+    else:
+        camera_active = True
+        camara = Camara()
+        print("Cámara activada")
+    return jsonify({"camera_active": camera_active})
+
+# Ruta para apagar la cámara automáticamente al salir de la página
+@app.route('/toggle_camera_off', methods=['POST'])
+def toggle_camera_off():
+    global camera_active, camara
+    if camera_active:
+        camera_active = False
+        if camara:
+            camara = None
+        print("Cámara apagada automáticamente al salir de la página")
+    return jsonify({"camera_active": camera_active})
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -85,32 +112,7 @@ def pag6():
 def pag7():
     return render_template('nivelAvan.html')
 
-# Ruta para alternar la cámara
-@app.route('/toggle_camera/<page>', methods=['POST'])
-def toggle_camera(page):
-    """Activar o desactivar la cámara."""
-    global camera_active, camara
-    with camara_lock:
-        if camera_active:
-            camera_active = False
-            camara = None
-            print("Cámara desactivada")
-        else:
-            camera_active = True
-            camara = Camara()
-            print("Cámara activada")
-    return redirect(url_for(page))
 
-# Ruta para apagar la cámara automáticamente al salir de la página
-@app.route('/toggle_camera_off', methods=['POST'])
-def toggle_camera_off():
-    global camera_active, camara
-    if camera_active:
-        camera_active = False
-        if camara:
-            camara = None
-        print("Cámara apagada automáticamente al salir de la página")
-    return jsonify({"camera_active": camera_active})
 
 @app.route('/get_result')
 def get_result():
