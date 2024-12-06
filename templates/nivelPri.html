@@ -52,8 +52,7 @@
             </div>
             <div class="col-md-6 column">
                 <div id="video-container" style="display: none;" >
-                    <img id="camera-feed" src="" style="border: 1px solid black;" alt="Cámara no disponible"
-                        alt="Cámara no disponible" />
+                    <img id="camera-feed" src="" style="border: 1px solid black; width: 100%;" alt="Cámara no disponible"/>
                 </div>
             </div>
         </div>
@@ -65,15 +64,15 @@
                 document.getElementById('letra-propuesta').innerText = 'Letra propuesta: ' + letra;
                 document.getElementById('respuesta').innerText = 'Respuesta: ' + respuesta;
 
-                const signImage = document.getElementById('signImage');
+                const signImage = document.getElementById('camera-feed');
                 if (respuesta === "¡correcta!") {
                     document.getElementById('nueva-letra').style.display = 'block'; // Mostrar el botón de nueva letra
                     signImage.style.margin = "15px";
-                    signImage.style.border = "10px solid green";
+                    signImage.style.border = "5px solid green";
                 }
-                if (respuesta === "incorrecta") {
+                if (respuesta === "incorrecta :(") {
                     signImage.style.margin = "15px"; 
-                    signImage.style.border = "10px solid red"; 
+                    signImage.style.border = "5px solid red"; 
                 }
             }
 
