@@ -3,7 +3,7 @@ import mediapipe as mp
 import random
 
 # Clase de la cámara
-class Camara2:
+class Camara:
     def __init__(self, cam_id=0, max_num_hands=1, min_detection_confidence=0.9):
         # Inicializar captura de video
         self.captura = cv2.VideoCapture(cam_id, cv2.CAP_DSHOW)
@@ -161,7 +161,7 @@ class Camara2:
 
 # Ejecutar el programa
 if __name__ == "__main__":
-    camara = Camara2()
+    camara = Camara()
 
     try:
         while True:
