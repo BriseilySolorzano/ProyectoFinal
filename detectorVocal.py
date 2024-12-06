@@ -55,7 +55,6 @@ class Camara:
         nudo2_mayor = mano_landmarks.landmark[10]
         nudo_mayor = mano_landmarks.landmark[11]     # Nudillo del mayor
         punta_mayor = mano_landmarks.landmark[12]    # Punta del mayor
-        nudo2_anular = mano_landmarks.landmark[14]
         nudo_anular = mano_landmarks.landmark[15]    # Nudillo del anular
         punta_anular = mano_landmarks.landmark[16]   # Punta del anular
         nudo2_meñique = mano_landmarks.landmark[18]
@@ -79,19 +78,19 @@ class Camara:
         
         # Verificar que los dedos estén medio abiertos
         e_d_pulgar = punta_pulgar.x > mitad_pulgar.x
-        e_d_indice = punta_indice.y > nudo2_indice.y
-        e_d_mayor = punta_mayor.y > nudo2_mayor.y
-        e_d_anular = punta_anular.y > nudo2_anular.y
-        e_d_meñique = punta_meñique.y > nudo2_meñique.y
+        e_d_indice = punta_indice.y > nudo_indice.y
+        e_d_mayor = punta_mayor.y > nudo_mayor.y
+        e_d_anular = punta_anular.y > nudo_anular.y
+        e_d_meñique = punta_meñique.y > nudo_meñique.y
 
         # Verificar meñique levantado
-        i = punta_meñique.y < nudo_meñique.y
+        i = punta_meñique.y < nudo2_meñique.y
         
         # Verificar que la mano está en dirección del eje z
         o = profun_indice.z > profun_mayor.z and profun_mayor.z > profun_anular.z and profun_anular.z > profun_meñique.z
         
         # Verificar índice y mayor levantado
-        u = punta_indice.y < nudo_indice.y and punta_mayor.y < nudo_mayor.y
+        u = punta_indice.y < nudo2_indice.y and punta_mayor.y < nudo2_mayor.y
 
         # Diccionario para las condiciones de cada letra
         condiciones = {
@@ -99,18 +98,18 @@ class Camara:
                 pulgar and a_d_indice and a_d_mayor and a_d_anular and a_d_meñique
                 and not u and not dedo_anular and not i
             ),
+            'U': lambda: (
+                 u and not pulgar and not dedo_anular and not i
+            ),
+            'I': lambda: (
+                i and e_d_pulgar and not u and not dedo_anular and e_d_indice and e_d_mayor
+                and e_d_anular
+            ),
             'O': lambda: (
                 pulgar and o and not u and not dedo_anular and not i
             ),
             'E': lambda: (
                 e_d_pulgar and not pulgar and e_d_indice and e_d_mayor and e_d_anular and e_d_meñique
-            ),
-            'I': lambda: (
-                i and not pulgar and not u and not dedo_anular and not e_d_indice and not e_d_mayor
-                and not e_d_anular and not e_d_meñique
-            ),
-            'U': lambda: (
-                 u and not pulgar and not dedo_anular and not i
             )
         }
 
